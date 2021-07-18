@@ -1,0 +1,54 @@
+<html>
+
+<script src="https://cdn.socket.io/3.1.1/socket.io.min.js" integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO" crossorigin="anonymous"></script>
+
+<head>
+  <title>Socket App</title>
+</head>
+<body>
+    Connection counter: <div id="counter"></div>
+    <input type="text" id="input" autofocus>
+    <input type="submit" id="send" value="Send">
+    <div id="messages"></div>
+</body>
+<script type="text/javascript">
+    const socket = io('localhost:3000');
+
+    const addMessage = (msg) => {
+        const msgSpan = document.createElement('span').innerHTML = msg;
+        document.getElementById('messages').append(msgSpan);
+        document.getElementById('messages').append(document.createElement('br'));
+    };
+
+    const updateCounter = (count) => {
+        document.getElementById('counter').innerHTML = count;
+    }
+
+    socket.on('connect', function() {
+        console.log('Successful connected to server');
+    });
+
+    socket.on('SERVER_MSG', function (data) {
+        addMessage(data.msg);
+    });
+
+    socket.on('NEW_CONN_EVENT', function (data) {
+        addMessage(data.msg);
+        updateCounter(data.count);
+    });
+
+    socket.on('DISCONN_EVENT', function (data) {
+        addMessage(data.msg);
+        updateCounter(data.count);
+    });
+
+    socket.on('disconnect', function() {
+        console.log('Disconnect from server');
+    });
+
+    document.getElementById('send').onclick = function() {
+        socket.emit('CLIENT_MSG', { msg: document.getElementById('input').value });
+        document.getElementById('input').value = '';
+    };
+</script>
+</html>
