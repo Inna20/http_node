@@ -27,9 +27,15 @@ socketApp.on('connection', function (socket) {
   let name = 'Client ' + counter;
   console.log('New connection - ' + name);
 
-  socket.broadcast.emit('NEW_CONN_EVENT', { msg: 'The new client connected - ' + name, count: counter });
+  // Всем кроме текущего
+  // socket.broadcast.emit('NEW_CONN_EVENT', { msg: 'The new client connected - ' + name, count: counter });
+  
+  // Отправит всем и текущему!!!
+  socketApp.emit('NEW_CONN_EVENT', { msg: 'The new client connected - ' + name, count: counter });
+
 
   socket.on('CLIENT_MSG', (data) => {
+
     socket.broadcast.emit('SERVER_MSG', { msg: data.msg.split('').reverse().join('')});
   });
 
